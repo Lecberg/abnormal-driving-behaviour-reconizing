@@ -1,17 +1,53 @@
 # Abnormal Driving Behavior Prototype
 
-This project contains an undergraduate thesis prototype for abnormal driving behavior detection.
+This project is a prototype for abnormal driving behavior detection from GPS trajectory data.
 
-The main runnable client is:
+It includes:
+
+- A Python desktop client.
+- A Python API for the browser dashboard.
+- A React dashboard interface.
+- Model files and example data for local testing.
+
+## Requirements
+
+Install these tools before running the project:
+
+- Python 3.12, or another Python version that supports the required PyTorch package.
+- Node.js and npm for the browser dashboard.
+- Rust and Cargo only if you want to run the optional Tauri desktop wrapper.
+
+## Setup
+
+Clone the repository and enter the project folder:
+
+```powershell
+git clone https://github.com/Lecberg/abnormal-driving-behaviour-reconizing.git
+cd abnormal-driving-behaviour-reconizing
+```
+
+Create a Python virtual environment:
+
+```powershell
+py -3.12 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+```
+
+On macOS or Linux, use:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+```
+
+## Python Desktop Client
+
+Run this command from the project root:
 
 ```powershell
 python abnormal_driving_client\client_app.py
-```
-
-The new React + Tauri client is in:
-
-```powershell
-abnormal_driving_client_tauri
 ```
 
 ## Browser Dashboard Demo
@@ -20,56 +56,51 @@ The browser dashboard is the recommended presentation view.
 
 ![Web dashboard screenshot](docs/web-dashboard-screenshot.png)
 
-Start the Python API:
+Start the Python API from the project root:
 
 ```powershell
-cd C:\Users\Mth13\Desktop\project_code
-.\.venv312\Scripts\python.exe -m uvicorn abnormal_driving_client.web_server:app --host 127.0.0.1 --port 8000
+python -m uvicorn abnormal_driving_client.web_server:app --host 127.0.0.1 --port 8000
 ```
 
-If the local virtual environment is not available, use another Python 3.12 environment with `requirements.txt` installed.
-On this machine, the bundled Codex Python 3.12 runtime also works after installing `requirements.txt`:
+Start the web dashboard in another terminal:
 
 ```powershell
-& 'C:\Users\Mth13\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe' -m uvicorn abnormal_driving_client.web_server:app --host 127.0.0.1 --port 8000
+cd abnormal_driving_client_tauri
+npm install
+npm run dev
 ```
 
-Start the web dashboard in another PowerShell window:
-
-```powershell
-cd C:\Users\Mth13\Desktop\project_code\abnormal_driving_client_tauri
-npm.cmd run dev
-```
-
-Then open:
+Then open this address in your browser:
 
 ```text
 http://127.0.0.1:5173
 ```
 
-The dashboard loads `gps_sample.csv` by default. You can also upload another CSV from the page.
+The dashboard loads `gps_sample.csv` by default. You can also upload another CSV file from the page.
 
-Run it in development mode with:
+## Optional Tauri Desktop Wrapper
 
-```powershell
-cd C:\Users\Mth13\Desktop\project_code\abnormal_driving_client_tauri
-npm.cmd install
-$env:PYTHON="C:\Users\Mth13\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe"
-npm.cmd run tauri dev
-```
+The React dashboard can also run inside a Tauri desktop window.
 
-Tauri also needs Rust/Cargo installed on the machine.
-
-## Setup
-
-Create a fresh Python environment before running the client.
+Install the frontend dependencies first:
 
 ```powershell
-py -3.12 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+cd abnormal_driving_client_tauri
+npm install
 ```
 
-If Python 3.12 is not available, use a Python version that supports PyTorch.
+Then run:
+
+```powershell
+npm run tauri dev
+```
+
+If Tauri cannot find Python, set the `PYTHON` environment variable to your Python executable.
+
+```powershell
+$env:PYTHON="path\to\python.exe"
+npm run tauri dev
+```
 
 ## Optional Map API
 
