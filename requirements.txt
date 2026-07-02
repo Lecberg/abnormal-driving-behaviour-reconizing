@@ -1,0 +1,10 @@
+pandas
+numpy<2.5
+torch
+scikit-learn==1.6.1
+joblib
+requests
+paho-mqtt
+fastapi
+uvicorn
+python-multipart

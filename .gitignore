@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+.venv/
+.venv312/
+venv/
+env/
+
+# Python tooling
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# IDE and local agent files
+.idea/
+.vscode/
+.agents/
+.codex/
+
+# Logs and runtime output
+*.log
+abnormal_driving_client/events.csv
+
+# Node and Tauri build output
+node_modules/
+dist/
+build/
+abnormal_driving_client_tauri/src-tauri/target/
+
+# Large raw or generated data files
+毕业设计终稿-马天豪.pdf
+gps_1101.csv
+gps_clean_redundant.csv
+gps_cleared.csv
+gps_features.csv
+0422_gps/data/gps_features.csv
+map_matching/gps_features.csv
+map_matching/gps_features_with_highway.csv
+map_matching/matched_path.csv
+map_matching/shaanxi-latest.osm.pbf
+map_matching/xi_an.graphml
+
+# Local map/cache data
+cache/
+map_matching/cache/
+map_matching/*.dbf
+map_matching/*.shp
+map_matching/*.shx
