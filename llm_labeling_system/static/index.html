@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Manual Driving Labeling</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="toolbar">
+        <div>
+          <h1>Manual Driving Labeling</h1>
+          <p>Upload a GPS CSV/XLSX file, generate trajectory windows, and label them from a human perspective.</p>
+        </div>
+        <a class="button" href="/api/manual/export">Export Manual CSV</a>
+      </section>
+
+      <section class="steps">
+        <form id="uploadForm" class="panel upload-panel">
+          <div class="panel-header">
+            <h2>1. Select CSV/XLSX File</h2>
+            <span id="uploadStatus">No file loaded</span>
+          </div>
+          <div class="form-grid">
+            <label class="wide">
+              Source file
+              <input id="sourceFile" name="file" type="file" accept=".csv,.xlsx" required />
+            </label>
+            <label>
+              Window size
+              <input id="windowSize" name="window_size" type="number" min="2" value="10" />
+            </label>
+            <label>
+              Stride
+              <input id="stride" name="stride" type="number" min="1" value="5" />
+            </label>
+            <label>
+              Max rows
+              <input id="maxRows" name="max_rows" type="number" min="1" placeholder="optional" />
+            </label>
+            <label>
+              Max windows
+              <input id="maxWindows" name="max_windows" type="number" min="1" value="500" />
+            </label>
+          </div>
+          <button class="button" type="submit">2. Start Labeling</button>
+        </form>
+
+        <section class="panel progress-panel">
+          <div class="panel-header">
+            <h2>Session</h2>
+            <span id="sessionText">Waiting for upload</span>
+          </div>
+          <div class="progress">
+            <div class="progress-bar"><span id="progressFill"></span></div>
+            <p id="progressText">0 / 0 labeled</p>
+          </div>
+        </section>
+      </section>
+
+      <section class="grid">
+        <div class="panel detail-panel">
+          <div class="panel-header">
+            <h2>Current Window</h2>
+            <span id="windowPosition">No window</span>
+          </div>
+          <div id="windowDetail" class="detail empty">Upload a file to start labeling.</div>
+        </div>
+
+        <form id="labelForm" class="panel label-panel">
+          <div class="panel-header">
+            <h2>3. Label This Window</h2>
+            <span id="saveStatus">Not saved</span>
+          </div>
+          <div class="label-options">
+            <label><input type="radio" name="label" value="normal" /> Normal</label>
+            <label><input type="radio" name="label" value="speeding" /> Speeding</label>
+            <label><input type="radio" name="label" value="harsh_accel_brake" /> Harsh acceleration/braking</label>
+            <label><input type="radio" name="label" value="zigzag_unstable" /> Zigzag / unstable</label>
+            <label><input type="radio" name="label" value="unclear" /> Unclear</label>
+          </div>
+          <label>
+            Confidence
+            <input id="confidence" type="range" min="0" max="1" step="0.05" value="1" />
+            <span id="confidenceText">100%</span>
+          </label>
+          <label class="check">
+            <input id="useForTraining" type="checkbox" checked />
+            Use this label for training
+          </label>
+          <label>
+            Notes
+            <textarea id="notes" rows="5" placeholder="Short reason, uncertainty, or evidence."></textarea>
+          </label>
+          <div class="actions">
+            <button id="prevButton" class="button secondary" type="button">Previous</button>
+            <button id="suggestButton" class="button secondary" type="button">AI Suggest</button>
+            <button class="button" type="submit">Save And Next</button>
+            <button id="nextButton" class="button secondary" type="button">Skip</button>
+          </div>
+        </form>
+      </section>
+    </main>
+    <script src="/static/app.js"></script>
+  </body>
+</html>

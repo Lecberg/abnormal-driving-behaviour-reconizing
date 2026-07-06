@@ -8,3 +8,4 @@ paho-mqtt
 fastapi
 uvicorn
 python-multipart
+openpyxl
