@@ -20,6 +20,8 @@ env/
 .vscode/
 .agents/
 .codex/
+.claude/settings.local.json
+tmp/
 
 # Logs and runtime output
 *.log
@@ -27,6 +29,7 @@ abnormal_driving_client/events.csv
 llm_labeling_system/outputs/*
 !llm_labeling_system/outputs/.gitkeep
 llm_labeling_system/uploads/
+llm_labeling_system/data/
 llm_labeling_system/.env
 
 # Node and Tauri build output

@@ -9,7 +9,8 @@ from typing import Any
 import pandas as pd
 
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+# services/windowing.py -> parents[2] is the repository root (…/project_code).
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_INPUT_CSV = PROJECT_ROOT / "gps_1101.csv"
 
 TIME_COLUMNS = ["gps时间", "gps鏃堕棿", "标准时间", "標準時間", "系统时间"]

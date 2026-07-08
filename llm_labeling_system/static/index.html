@@ -4,28 +4,46 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Manual Driving Labeling</title>
-    <link rel="stylesheet" href="/static/styles.css" />
+    <script>
+      // Apply the saved theme before first paint to avoid a flash.
+      (function () {
+        var t = localStorage.getItem("labeling-theme");
+        if (t === "light" || t === "dark") {
+          document.documentElement.setAttribute("data-theme", t);
+        }
+      })();
+    </script>
+    <link rel="stylesheet" href="/static/css/tokens.css" />
+    <link rel="stylesheet" href="/static/css/app.css" />
   </head>
   <body>
     <main class="shell">
       <section class="toolbar">
         <div>
           <h1>Manual Driving Labeling</h1>
-          <p>Upload a GPS CSV/XLSX file, generate trajectory windows, and label them from a human perspective.</p>
+          <p>Create a session from a GPS file, then label each trajectory window from a human perspective.</p>
         </div>
-        <a class="button" href="/api/manual/export">Export Manual CSV</a>
+        <div class="toolbar-actions">
+          <button id="settingsButton" class="button ghost" type="button">⚙ Settings</button>
+          <button id="themeToggle" class="button ghost" type="button" aria-pressed="false">☾ Dark</button>
+          <a id="exportLink" class="button" href="#" aria-disabled="true">Export CSV</a>
+        </div>
       </section>
 
       <section class="steps">
         <form id="uploadForm" class="panel upload-panel">
           <div class="panel-header">
-            <h2>1. Select CSV/XLSX File</h2>
+            <h2>1. New Session</h2>
             <span id="uploadStatus">No file loaded</span>
           </div>
           <div class="form-grid">
             <label class="wide">
               Source file
               <input id="sourceFile" name="file" type="file" accept=".csv,.xlsx" required />
+            </label>
+            <label>
+              Project (optional)
+              <input id="project" name="project" type="text" placeholder="default" />
             </label>
             <label>
               Window size
@@ -44,19 +62,72 @@
               <input id="maxWindows" name="max_windows" type="number" min="1" value="500" />
             </label>
           </div>
-          <button class="button" type="submit">2. Start Labeling</button>
+          <button class="button" type="submit">Create Session</button>
         </form>
 
         <section class="panel progress-panel">
           <div class="panel-header">
             <h2>Session</h2>
-            <span id="sessionText">Waiting for upload</span>
+            <span id="sessionMeta">No session selected</span>
+          </div>
+          <div class="session-controls">
+            <div class="session-row">
+              <label>
+                Active session
+                <select id="sessionSelect" aria-label="Active session"></select>
+              </label>
+              <button id="deleteSession" class="button ghost" type="button" disabled>Delete</button>
+            </div>
           </div>
           <div class="progress">
-            <div class="progress-bar"><span id="progressFill"></span></div>
+            <div
+              id="progressBar"
+              class="progress-bar"
+              role="progressbar"
+              aria-label="Labeling progress"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow="0"
+            >
+              <span id="progressFill"></span>
+            </div>
             <p id="progressText">0 / 0 labeled</p>
           </div>
         </section>
+      </section>
+
+      <section class="panel scan-panel">
+        <div class="panel-header">
+          <h2>2. AI Scan</h2>
+          <span id="scanStatus" class="status-live" aria-live="polite">Not scanned</span>
+        </div>
+        <div class="scan-controls">
+          <button id="scanButton" class="button" type="button">Run AI Scan</button>
+          <button id="scanCancel" class="button ghost" type="button" disabled>Cancel</button>
+          <label class="check">
+            <input id="mockToggle" type="checkbox" />
+            Use offline mock suggestions (no API key)
+          </label>
+          <span id="aiKeyBadge" class="pill"></span>
+          <a id="exportAiLink" class="button secondary" href="#" aria-disabled="true">Export AI CSV</a>
+        </div>
+        <div class="progress">
+          <div
+            id="scanProgressBar"
+            class="progress-bar"
+            role="progressbar"
+            aria-label="Scan progress"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+          >
+            <span id="scanProgressFill"></span>
+          </div>
+          <p id="scanProgressText">0 / 0 scanned</p>
+        </div>
+        <div id="scanResults" class="scan-results">
+          <p class="empty">Run a scan to list windows flagged as potentially abnormal.</p>
+        </div>
       </section>
 
       <section class="grid">
@@ -65,43 +136,78 @@
             <h2>Current Window</h2>
             <span id="windowPosition">No window</span>
           </div>
-          <div id="windowDetail" class="detail empty">Upload a file to start labeling.</div>
+          <div id="windowDetail" class="detail empty">Select or create a session to start labeling.</div>
         </div>
 
         <form id="labelForm" class="panel label-panel">
           <div class="panel-header">
             <h2>3. Label This Window</h2>
-            <span id="saveStatus">Not saved</span>
+            <span id="saveStatus" class="status-live" aria-live="polite">Not saved</span>
           </div>
-          <div class="label-options">
-            <label><input type="radio" name="label" value="normal" /> Normal</label>
-            <label><input type="radio" name="label" value="speeding" /> Speeding</label>
-            <label><input type="radio" name="label" value="harsh_accel_brake" /> Harsh acceleration/braking</label>
-            <label><input type="radio" name="label" value="zigzag_unstable" /> Zigzag / unstable</label>
-            <label><input type="radio" name="label" value="unclear" /> Unclear</label>
-          </div>
-          <label>
+          <fieldset class="label-fieldset">
+            <legend>Label</legend>
+            <div class="label-options">
+              <label><input type="radio" name="label" value="normal" /> Normal</label>
+              <label><input type="radio" name="label" value="speeding" /> Speeding</label>
+              <label><input type="radio" name="label" value="harsh_accel_brake" /> Harsh acceleration/braking</label>
+              <label><input type="radio" name="label" value="zigzag_unstable" /> Zigzag / unstable</label>
+              <label><input type="radio" name="label" value="unclear" /> Unclear</label>
+            </div>
+          </fieldset>
+          <label for="confidence">
             Confidence
             <input id="confidence" type="range" min="0" max="1" step="0.05" value="1" />
-            <span id="confidenceText">100%</span>
+            <span id="confidenceText" aria-hidden="true">100%</span>
           </label>
           <label class="check">
             <input id="useForTraining" type="checkbox" checked />
             Use this label for training
           </label>
-          <label>
+          <label for="notes">
             Notes
             <textarea id="notes" rows="5" placeholder="Short reason, uncertainty, or evidence."></textarea>
           </label>
           <div class="actions">
             <button id="prevButton" class="button secondary" type="button">Previous</button>
-            <button id="suggestButton" class="button secondary" type="button">AI Suggest</button>
             <button class="button" type="submit">Save And Next</button>
             <button id="nextButton" class="button secondary" type="button">Skip</button>
           </div>
         </form>
       </section>
+      <dialog id="settingsDialog" class="settings-dialog">
+        <form id="settingsForm">
+          <button id="settingsClose" class="dialog-close" type="button" aria-label="Close settings">✕</button>
+          <h2>AI Settings</h2>
+          <p class="settings-hint">
+            Any OpenAI-compatible provider (DeepSeek, OpenAI, Ollama — include <code>/v1</code> for Ollama).
+            The API key is stored on the server and never shown again.
+          </p>
+          <label>
+            API base URL
+            <input id="aiBaseUrl" type="url" placeholder="https://api.deepseek.com" />
+          </label>
+          <label>
+            Model
+            <input id="aiModel" type="text" placeholder="deepseek-v4-flash" />
+          </label>
+          <label>
+            API key
+            <input id="aiApiKey" type="password" autocomplete="off" placeholder="sk-…" />
+          </label>
+          <p id="keyStatus" class="key-status" aria-live="polite"></p>
+          <label class="check">
+            <input id="clearKey" type="checkbox" />
+            Remove stored key (fall back to environment variable)
+          </label>
+          <p id="settingsStatus" class="status-live" aria-live="polite"></p>
+          <div class="actions">
+            <button id="testConnection" class="button secondary" type="button">Test connection</button>
+            <button id="settingsCancel" class="button ghost" type="button">Cancel</button>
+            <button class="button" type="submit">Save</button>
+          </div>
+        </form>
+      </dialog>
     </main>
-    <script src="/static/app.js"></script>
+    <script type="module" src="/static/js/main.js"></script>
   </body>
 </html>

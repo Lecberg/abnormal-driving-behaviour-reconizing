@@ -1,0 +1,101 @@
+/* Design tokens — light + dark. The viewer's system preference is the default;
+   the in-app toggle stamps [data-theme] on <html> and always wins. */
+
+:root {
+  color-scheme: light dark;
+
+  --bg: #f4f5fa;
+  --panel: #ffffff;
+  --panel-soft: #f4f5fa;
+  --text: #1c2230;
+  --muted: #6b7288;
+  --border: #e2e5ef;
+
+  --accent: #6366f1;
+  --accent-hover: #4f52e0;
+  --accent-soft: #eef0fe;
+  --accent-contrast: #ffffff;
+
+  --success: #067a53;
+  --success-bg: #e8f8f1;
+  --warning: #b05408;
+  --warning-bg: #fdf4e3;
+  --danger: #c22d22;
+  --danger-bg: #fdefee;
+  --neutral-fg: #565d73;
+  --neutral-bg: #eef0f6;
+
+  --track: #e8eaf3;
+  --header-grad: linear-gradient(135deg, #eef0fe 0%, #ffffff 55%);
+  --radius: 14px;
+  --radius-sm: 10px;
+  --shadow: 0 1px 2px rgba(28, 34, 48, 0.04), 0 12px 32px rgba(28, 34, 48, 0.07);
+  --shadow-sm: 0 1px 2px rgba(28, 34, 48, 0.06);
+  --focus-ring: 0 0 0 3px rgba(99, 102, 241, 0.35);
+}
+
+/* Explicit dark choice (toggle) */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg: #12151f;
+  --panel: #1a1e2b;
+  --panel-soft: #212636;
+  --text: #e8eaf3;
+  --muted: #99a0b5;
+  --border: #2c3245;
+
+  --accent: #818cf8;
+  --accent-hover: #9ba3fa;
+  --accent-soft: #262a44;
+  --accent-contrast: #0d1020;
+
+  --success: #4cc794;
+  --success-bg: #142b22;
+  --warning: #e5a556;
+  --warning-bg: #2c2212;
+  --danger: #f2837a;
+  --danger-bg: #301715;
+  --neutral-fg: #b4bacc;
+  --neutral-bg: #262b3c;
+
+  --track: #262b3c;
+  --header-grad: linear-gradient(135deg, #232848 0%, #1a1e2b 55%);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 12px 32px rgba(0, 0, 0, 0.45);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --focus-ring: 0 0 0 3px rgba(129, 140, 248, 0.45);
+}
+
+/* System dark, unless the user has forced light */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    --bg: #12151f;
+    --panel: #1a1e2b;
+    --panel-soft: #212636;
+    --text: #e8eaf3;
+    --muted: #99a0b5;
+    --border: #2c3245;
+
+    --accent: #818cf8;
+    --accent-hover: #9ba3fa;
+    --accent-soft: #262a44;
+    --accent-contrast: #0d1020;
+
+    --success: #4cc794;
+    --success-bg: #142b22;
+    --warning: #e5a556;
+    --warning-bg: #2c2212;
+    --danger: #f2837a;
+    --danger-bg: #301715;
+    --neutral-fg: #b4bacc;
+    --neutral-bg: #262b3c;
+
+    --track: #262b3c;
+    --header-grad: linear-gradient(135deg, #232848 0%, #1a1e2b 55%);
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 12px 32px rgba(0, 0, 0, 0.45);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --focus-ring: 0 0 0 3px rgba(129, 140, 248, 0.45);
+  }
+}
