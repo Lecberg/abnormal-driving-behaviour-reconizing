@@ -9,7 +9,7 @@ Data flows: **upload a GPS file → slice per-vehicle trajectory windows →
 optionally AI-scan the session → review the flagged windows → label → export
 CSV/JSONL**. Labels are stored in a local SQLite database, scoped per session.
 
-![Manual Driving Labeling dashboard](docs/screenshot.svg)
+A dashboard screenshot is in the [repository root README](../README.md).
 
 ## Highlights
 

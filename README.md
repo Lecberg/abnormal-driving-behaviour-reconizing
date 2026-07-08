@@ -78,6 +78,25 @@ http://127.0.0.1:5173
 
 The dashboard loads `gps_sample.csv` by default. You can also upload another CSV file from the page.
 
+## Manual Driving Labeling Platform
+
+A local, browser-based tool for labeling GPS driving windows from a human
+perspective. An AI assistant can scan a whole session in the background and
+flag the windows that look abnormal, so a human only has to review those
+before saving the final label.
+
+![Manual Driving Labeling dashboard](docs/labeling-dashboard-screenshot.png)
+
+Start it from the project root:
+
+```powershell
+python -m uvicorn llm_labeling_system.app:app --host 127.0.0.1 --port 8010
+```
+
+Then open <http://127.0.0.1:8010>. See
+[`llm_labeling_system/README.md`](llm_labeling_system/README.md) for the full
+workflow, AI provider setup, and export options.
+
 ## Optional Tauri Desktop Wrapper
 
 The React dashboard can also run inside a Tauri desktop window.
